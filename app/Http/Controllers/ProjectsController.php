@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Projects;
 use Illuminate\Http\Request;
 
 class ProjectsController extends Controller
@@ -11,7 +12,6 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -27,7 +27,26 @@ class ProjectsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $customMessages = [
+            'required' => 'El campo :attribute es obligatorio.',
+            'string' => 'El campo :attribute debe ser una cadena de texto.',
+            'max' => 'El campo :attribute no debe exceder :max caracteres.',
+        ];
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+        ], $customMessages);
+
+        $project = new Projects();
+        $project->name = $validatedData['name'];
+        $project->description = $validatedData['description'];
+        $project->save();
+
+        return response()->json([
+            'message' => 'Nuevo proyecto creado',
+            'data' => $project
+        ], 201);
     }
 
     /**

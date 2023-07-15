@@ -2,25 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tasks;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class TasksController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $tasks = Tasks::all();
-        return response()->json($tasks);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
+        //
     }
 
     /**
@@ -35,23 +27,20 @@ class TasksController extends Controller
         ];
 
         $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string',
+            'password' => 'required|string',
         ], $customMessages);
 
-        $task = new Tasks();
-        $task->title = $validatedData['title'];
-        $task->description = $validatedData['description'];
-        $task->deadline = $validatedData['deadline'];
-        $task->priority = $validatedData['priority'];
-        $task->status = $validatedData['status'];
-        $task->project_id = $validatedData['project_id'];
-        $task->user_id = $validatedData['user_id'];
-        $task->save();
+        $users = new User();
+        $users->name = $validatedData['name'];
+        $users->email = $validatedData['email'];
+        $users->password = $validatedData['password'];
+        $users->save();
 
         return response()->json([
-            'message' => 'Nueva tarea creada',
-            'data' => $task
+            'message' => 'Nuevo usuario creado',
+            'data' => $users
         ], 201);
     }
 
@@ -59,14 +48,6 @@ class TasksController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
     {
         //
     }
