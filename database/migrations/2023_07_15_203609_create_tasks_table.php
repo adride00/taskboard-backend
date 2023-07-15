@@ -23,7 +23,8 @@ return new class extends Migration
             $table->timestamp("creation_task")->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->dateTime("deadline")->nullable();
             $table->string("priority");
-            $table->string("status");
+            $table->string("status")->default("active");
+            $table->timestamps();
         });
     }
 

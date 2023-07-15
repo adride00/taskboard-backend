@@ -20,6 +20,8 @@ return new class extends Migration
             $table->foreign("user_id")->references("id")->on("users");
             $table->string("content", 200);
             $table->timestamp("comment_create")->default(DB::raw("CURRENT_TIMESTAMP"));
+            $table->string("status")->default("active");
+            $table->timestamps();
         });
     }
 
