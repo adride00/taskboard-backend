@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreign("project_id")->references("id")->on("projects");
             $table->unsignedBigInteger("user_id");
             $table->foreign("user_id")->references("id")->on("users");
+            $table->unsignedBigInteger("label_id");
+            $table->foreign("label_id")->references("id")->on("labels");
             $table->string("title");
             $table->string("description", 200);
             $table->timestamp("creation_task")->default(DB::raw('CURRENT_TIMESTAMP'));

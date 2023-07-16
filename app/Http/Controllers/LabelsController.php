@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Labels;
 use Illuminate\Http\Request;
 
 class LabelsController extends Controller
@@ -27,7 +28,26 @@ class LabelsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $customMessages = [
+            'required' => 'El campo :attribute es obligatorio.',
+            'string' => 'El campo :attribute debe ser una cadena de texto.',
+            'max' => 'El campo :attribute no debe exceder :max caracteres.',
+        ];
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'string'
+        ], $customMessages);
+
+        $label = new Labels();
+        $label->name = $validatedData['name'];
+        $label->description = $validatedData['description'];
+        $label->save();
+
+        return response()->json([
+            'message' => 'Nueva etiqueta creada',
+            'data' => $label
+        ], 201);
     }
 
     /**
