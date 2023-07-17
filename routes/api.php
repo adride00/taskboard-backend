@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TasksController;
+use App\Http\Controllers\LabelsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,8 +20,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-
 Route::get('/tasks', [TasksController::class, 'index']);
 Route::get('/tasks/{id}', [TasksController::class, 'show']);
 Route::put('/tasks/{id}', [TasksController::class, 'update']);
@@ -28,3 +27,8 @@ Route::put('/deleteTask/{id}', [TasksController::class, 'softDelete']);
 Route::put('/updateProgress/{id}', [TasksController::class, 'updateProgress']);
 Route::put('/tasks', [TasksController::class, 'store']);
 Route::get('/searchTasks/{search}', [TasksController::class, 'searchTask']);
+
+Route::get('/label', [LabelsController::class, 'index']);
+Route::post('/label', [LabelsController::class, 'store']);
+Route::Put('label/{id}', [LabelsController::class, 'update']);
+Route::put('deleteLabel/{id}', [LabelsController::class, 'softDelete']);
