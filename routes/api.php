@@ -28,3 +28,11 @@ Route::put('/deleteTask/{id}', [TasksController::class, 'softDelete']);
 Route::put('/updateProgress/{id}', [TasksController::class, 'updateProgress']);
 Route::put('/tasks', [TasksController::class, 'store']);
 Route::get('/searchTasks/{search}', [TasksController::class, 'searchTask']);
+
+//Users Routes
+Route::get('/users', [UsersController::class, 'index']);
+Route::post('/users',[UsersController::class, 'store']);
+Route::get('/users/{id}', [UsersController::class,'show']);
+Route::put('/users/{id}', [UsersController::class, 'update']);
+Route::put('/users/{id}', [UsersController::class, 'destroy']);
+
