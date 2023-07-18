@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Labels;
 use Illuminate\Http\Request;
+use App\Models\Labels;
 
 class LabelsController extends Controller
 {

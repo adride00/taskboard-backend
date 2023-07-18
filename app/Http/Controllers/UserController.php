@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+
+class UsersController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $users = User::all();
+        return response()->json($users);
         $users = User::all();
         return response()->json($users);
     }
@@ -29,19 +32,21 @@ class UserController extends Controller
 
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string',
-            'password' => 'required|string',
+            'email' => 'required|string|email|unique:users,email',
+            'password' => 'required|string|min:6'
         ], $customMessages);
 
-        $users = new User();
-        $users->name = $validatedData['name'];
-        $users->email = $validatedData['email'];
-        $users->password = $validatedData['password'];
-        $users->save();
+
+        $user = new User();
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+        $user->password = bcrypt($validatedData['password']);
+
+        $user->save();
 
         return response()->json([
             'message' => 'Nuevo usuario creado',
-            'data' => $users
+            'data' => $user
         ], 201);
     }
 
@@ -53,6 +58,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         return response()->json($user);
     }
+
 
     /**
      * Update the specified resource in storage.
