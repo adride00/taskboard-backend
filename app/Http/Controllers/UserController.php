@@ -12,7 +12,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+        return response()->json($users);
     }
 
     /**
@@ -49,7 +50,8 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        return response()->json($user);
     }
 
     /**
@@ -57,7 +59,26 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $customMessages = [
+            'required' => 'El campo :attribute es obligatorio.',
+            'string' => 'El campo :attribute debe ser una cadena de texto.',
+            'max' => 'El campo :attribute no debe exceder :max caracteres.',
+        ];
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users,email,' . $id,
+        ], $customMessages);
+
+        $user = User::findOrFail($id);
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+        $user->save();
+
+        return response()->json([
+            'message' => 'Usuario actualizado',
+            'data' => $user
+        ]);
     }
 
     /**
@@ -65,6 +86,13 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $status = User::findOrFail($id);
+        $status->status = "inactivo";
+        $status->save();
+
+        return response()->json([
+            'message' => 'Usuario ha sido eliminado',
+            'data' => $status
+        ]);
     }
 }

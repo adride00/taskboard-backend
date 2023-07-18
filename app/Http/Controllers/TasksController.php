@@ -21,11 +21,6 @@ class TasksController extends Controller
         return response()->json($tasks);
     }
 
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $customMessages = [
@@ -60,25 +55,27 @@ class TasksController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $registro = Tasks::join('projects', 'tasks.project_id', '=', 'projects.id')
-            ->join('users', 'tasks.user_id', '=', 'users.id')
-            ->join('labels', 'tasks.label_id', '=', 'labels.id')
-            ->select('tasks.*', 'projects.name as project_name', 'users.name as user_name', 'labels.name as label_name')
-            ->findOrFail($id);
+        try {
+            $registro = Tasks::join('projects', 'tasks.project_id', '=', 'projects.id')
+                ->join('users', 'tasks.user_id', '=', 'users.id')
+                ->join('labels', 'tasks.label_id', '=', 'labels.id')
+                ->select('tasks.*', 'projects.name as project_name', 'users.name as user_name', 'labels.name as label_name')
+                ->findOrFail($id);
 
-        return response()->json($registro);
+            return response()->json([
+                'message' => 'Tarea encontrada',
+                'data' => $registro
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Tarea no encontrada',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
-
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $customMessages = [
@@ -97,20 +94,26 @@ class TasksController extends Controller
             'label_id' => 'integer'
         ], $customMessages);
 
-        $task = Tasks::findOrFail($id);
-        $task->title = $validatedData['title'];
-        $task->description = $validatedData['description'];
-        $task->deadline = $validatedData['deadline'];
-        $task->priority = $validatedData['priority'];
-        $task->project_id = $validatedData['project_id'];
-        $task->user_id = $validatedData['user_id'];
-        $task->label_id = $validatedData['label_id'];
-        $task->save();
+        try {
+            $task = Tasks::findOrFail($id);
+            $task->title = $validatedData['title'];
+            $task->description = $validatedData['description'];
+            $task->deadline = $validatedData['deadline'];
+            $task->priority = $validatedData['priority'];
+            $task->project_id = $validatedData['project_id'];
+            $task->user_id = $validatedData['user_id'];
+            $task->label_id = $validatedData['label_id'];
+            $task->save();
 
-        return response()->json([
-            'message' => 'Tarea actualizada',
-            'data' => $task
-        ]);
+            return response()->json([
+                'message' => 'Tarea actualizada',
+                'data' => $task
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Ocurrio un error al actualizar la tarea'
+            ], 500);
+        }
     }
 
     public function updateProgress(Request $request, string $id)
@@ -137,15 +140,20 @@ class TasksController extends Controller
 
     public function softDelete(string $id)
     {
+        try {
+            $status = Tasks::findOrFail($id);
+            $status->status = "inactivo";
+            $status->save();
 
-        $status = Tasks::findOrFail($id);
-        $status->status = "inactivo";
-        $status->save();
-
-        return response()->json([
-            'message' => 'Tarea eliminada',
-            'data' => $status
-        ]);
+            return response()->json([
+                'message' => 'Tarea eliminada',
+                'data' => $status
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'No se encontró la tarea'
+            ], 404);
+        }
     }
 
     public function searchTask(string $search)
@@ -156,6 +164,24 @@ class TasksController extends Controller
             ->select('tasks.*', 'projects.name as project_name', 'users.name as user_name', 'labels.name as label_name')
             ->where('tasks.title', 'LIKE', '%' . $search . '%')
             ->orWhere('tasks.description', 'LIKE', '%' . $search . '%')
+            ->get();
+
+        if ($registro->isEmpty()) {
+            return response()->json([
+                'message' => 'No se encontraron tareas que coincidan con la búsqueda'
+            ], 404);
+        }
+
+        return response()->json($registro);
+    }
+
+    public function filterByLabel(string $label)
+    {
+        $registro = Tasks::join('projects', 'tasks.project_id', '=', 'projects.id')
+            ->join('users', 'tasks.user_id', '=', 'users.id')
+            ->join('labels', 'tasks.label_id', '=', 'labels.id')
+            ->select('tasks.*', 'projects.name as project_name', 'users.name as user_name', 'labels.name as label_name')
+            ->where('labels.name', 'LIKE', '%' . $label . '%')
             ->get();
 
         if ($registro->isEmpty()) {

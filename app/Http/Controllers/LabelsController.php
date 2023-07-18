@@ -7,25 +7,14 @@ use Illuminate\Http\Request;
 
 class LabelsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        $label = Labels::all();
+
+        return response()->json($label);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $customMessages = [
@@ -50,35 +39,61 @@ class LabelsController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(string $id)
     {
-        //
+        $label = Labels::findOrFail($id);
+
+        return response()->json($label);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $customMessages = [
+                'required' => 'El campo :attribute es obligatorio.',
+                'string' => 'El campo :attribute debe ser una cadena de texto.',
+                'max' => 'El campo :attribute no debe exceder :max caracteres.',
+            ];
+
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'string'
+            ], $customMessages);
+
+            $label = Labels::findOrFail($id);
+            $label->name = $validatedData['name'];
+            $label->description = $validatedData['description'];
+            $label->save();
+
+            return response()->json([
+                'message' => 'Cambio completado.',
+                'data' => $label
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'No se encontro el id',
+                'data' => $e
+            ], 404);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function softDelete(string $id)
     {
-        //
+        try {
+            $status = Labels::findOrFail($id);
+            $status->status = "inactivo";
+            $status->save();
+            return response()->json([
+                'message' => 'Tarea eliminada',
+                'data' => $status
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'No se encontro el id',
+                'data' => $e
+            ], 404);
+        }
     }
 }
