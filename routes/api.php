@@ -20,11 +20,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
-Route::post('/user', [UserController::class, 'store']);
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/tasks/{id}', [TasksController::class, 'show']);
     Route::get('/tasks', [TasksController::class, 'index']);
@@ -48,9 +45,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/comments', [CommentsController::class, 'store']);
     Route::get('/comments', [CommentsController::class, 'index']);
     Route::get('/comments/{id}', [CommentsController::class, 'show']);
+
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/user', [UserController::class, 'store']);
+    Route::get('/user/{id}', [UserController::class, 'show']);
+    Route::put('/user/{id}', [UserController::class, 'update']);
+    Route::put('/deleteUser/{id}', [UserController::class, 'destroy']);
 });
 
-
-Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);

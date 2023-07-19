@@ -15,43 +15,29 @@ class AuthController extends Controller
     {
         $this->middleware('auth:api', ['except' => ['login']]);
     }
-    public function signup(SignupRequest $request)
-    {
-        $data = $request->validated();
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password'])
-        ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Usuario creado',
-            'access_token' => $token
-        ], 201);
-    }
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->validated();
-        if (!Auth::attempt($credentials)) {
+        try {
+            $credentials = $request->validated();
+            if (!Auth::attempt($credentials)) {
+                return response()->json([
+                    'message' => 'Credenciales incorrectas'
+                ], 401);
+            }
+
+            $user = User::where('email', $credentials['email'])->first();
+            $token = $user->createToken('auth_token')->plainTextToken;
             return response()->json([
-                'message' => 'Credenciales incorrectas'
-            ], 401);
+                'message' => 'Login correcto',
+                'access_token' => $token
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error login',
+                'data' => $e->getMessage()
+            ], 500);
         }
-
-        $user = User::where('email', $credentials['email'])->first();
-        $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json([
-            'message' => 'Login correcto',
-            'access_token' => $token
-        ], 200);
-    }
-
-    public function logout(Request $request)
-    {
-        $user = $request->user();
-        $user->tokens()->delete();
     }
 }

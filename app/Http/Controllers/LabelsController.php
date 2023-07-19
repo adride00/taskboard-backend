@@ -10,9 +10,16 @@ class LabelsController extends Controller
 
     public function index()
     {
-        $label = Labels::all();
+        try {
+            $label = Labels::all();
 
-        return response()->json($label);
+            return response()->json($label);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al crear la etiqueta',
+                'data' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function store(Request $request)

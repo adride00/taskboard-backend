@@ -23,7 +23,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => 'required|email:rfc,dns',
-            'password' => 'required|string|min:8'
+            'password' => 'required|string|min:5'
         ];
     }
 }

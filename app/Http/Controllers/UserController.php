@@ -6,15 +6,22 @@ use App\Models\User;
 use Illuminate\Http\Request;
 
 
-class UsersController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $users = User::all();
-        return response()->json($users);
+        try {
+            $users = User::all();
+            return response()->json($users);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al crear la etiqueta',
+                'data' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -22,30 +29,37 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $customMessages = [
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser una cadena de texto.',
-            'max' => 'El campo :attribute no debe exceder :max caracteres.',
-        ];
+        try {
+            $customMessages = [
+                'required' => 'El campo :attribute es obligatorio.',
+                'string' => 'El campo :attribute debe ser una cadena de texto.',
+                'max' => 'El campo :attribute no debe exceder :max caracteres.',
+            ];
 
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:6'
-        ], $customMessages);
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|unique:users,email',
+                'password' => 'required|string|min:6'
+            ], $customMessages);
 
 
-        $user = new User();
-        $user->name = $validatedData['name'];
-        $user->email = $validatedData['email'];
-        $user->password = bcrypt($validatedData['password']);
+            $user = new User();
+            $user->name = $validatedData['name'];
+            $user->email = $validatedData['email'];
+            $user->password = bcrypt($validatedData['password']);
 
-        $user->save();
+            $user->save();
 
-        return response()->json([
-            'message' => 'Nuevo usuario creado',
-            'data' => $user
-        ], 201);
+            return response()->json([
+                'message' => 'Nuevo usuario creado',
+                'data' => $user
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al crear la etiqueta',
+                'data' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -53,8 +67,15 @@ class UsersController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::findOrFail($id);
-        return response()->json($user);
+        try {
+            $user = User::findOrFail($id);
+            return response()->json($user);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al mostrar usuario',
+                'data' => $e->getMessage()
+            ], 500);
+        }
     }
 
 
@@ -63,26 +84,33 @@ class UsersController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $customMessages = [
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser una cadena de texto.',
-            'max' => 'El campo :attribute no debe exceder :max caracteres.',
-        ];
+        try {
+            $customMessages = [
+                'required' => 'El campo :attribute es obligatorio.',
+                'string' => 'El campo :attribute debe ser una cadena de texto.',
+                'max' => 'El campo :attribute no debe exceder :max caracteres.',
+            ];
 
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users,email,' . $id,
-        ], $customMessages);
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|unique:users,email,' . $id,
+            ], $customMessages);
 
-        $user = User::findOrFail($id);
-        $user->name = $validatedData['name'];
-        $user->email = $validatedData['email'];
-        $user->save();
+            $user = User::findOrFail($id);
+            $user->name = $validatedData['name'];
+            $user->email = $validatedData['email'];
+            $user->save();
 
-        return response()->json([
-            'message' => 'Usuario actualizado',
-            'data' => $user
-        ]);
+            return response()->json([
+                'message' => 'Usuario actualizado',
+                'data' => $user
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar usuario',
+                'data' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -90,13 +118,25 @@ class UsersController extends Controller
      */
     public function destroy(string $id)
     {
-        $status = User::findOrFail($id);
-        $status->status = "inactivo";
-        $status->save();
+        try {
+            $status = User::findOrFail($id);
+            $status->status = "inactivo";
+            $status->save();
 
-        return response()->json([
-            'message' => 'Usuario ha sido eliminado',
-            'data' => $status
-        ]);
+            return response()->json([
+                'message' => 'Usuario ha sido eliminado',
+                'data' => $status
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar usuario',
+                'data' => $e->getMessage()
+            ], 500);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Usuario no encontrado',
+                'data' => $e->getMessage()
+            ], 404);
+        }
     }
 }
