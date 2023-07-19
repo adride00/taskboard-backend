@@ -15,8 +15,6 @@ class UsersController extends Controller
     {
         $users = User::all();
         return response()->json($users);
-        $users = User::all();
-        return response()->json($users);
     }
 
     /**

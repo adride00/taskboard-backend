@@ -12,13 +12,20 @@ class TasksController extends Controller
      */
     public function index()
     {
-        $tasks = Tasks::join('projects', 'tasks.project_id', '=', 'projects.id')
-            ->join('users', 'tasks.user_id', '=', 'users.id')
-            ->join('labels', 'tasks.label_id', '=', 'labels.id')
-            ->select('tasks.*', 'projects.name as project_name', 'users.name as user_name', 'labels.name as label_name')
-            ->get();
+        try {
+            $tasks = Tasks::join('projects', 'tasks.project_id', '=', 'projects.id')
+                ->join('users', 'tasks.user_id', '=', 'users.id')
+                ->join('labels', 'tasks.label_id', '=', 'labels.id')
+                ->select('tasks.*', 'projects.name as project_name', 'users.name as user_name', 'labels.name as label_name')
+                ->get();
 
-        return response()->json($tasks);
+            return response()->json($tasks);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Tareas no encontrada',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
     public function store(Request $request)

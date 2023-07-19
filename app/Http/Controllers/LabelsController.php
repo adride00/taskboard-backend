@@ -17,26 +17,33 @@ class LabelsController extends Controller
 
     public function store(Request $request)
     {
-        $customMessages = [
-            'required' => 'El campo :attribute es obligatorio.',
-            'string' => 'El campo :attribute debe ser una cadena de texto.',
-            'max' => 'El campo :attribute no debe exceder :max caracteres.',
-        ];
+        try {
+            $customMessages = [
+                'required' => 'El campo :attribute es obligatorio.',
+                'string' => 'El campo :attribute debe ser una cadena de texto.',
+                'max' => 'El campo :attribute no debe exceder :max caracteres.',
+            ];
 
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'string'
-        ], $customMessages);
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'string'
+            ], $customMessages);
 
-        $label = new Labels();
-        $label->name = $validatedData['name'];
-        $label->description = $validatedData['description'];
-        $label->save();
+            $label = new Labels();
+            $label->name = $validatedData['name'];
+            $label->description = $validatedData['description'];
+            $label->save();
 
-        return response()->json([
-            'message' => 'Nueva etiqueta creada',
-            'data' => $label
-        ], 201);
+            return response()->json([
+                'message' => 'Nueva etiqueta creada',
+                'data' => $label
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al crear la etiqueta',
+                'data' => $e->getMessage()
+            ], 500);
+        }
     }
 
 
@@ -44,7 +51,10 @@ class LabelsController extends Controller
     {
         $label = Labels::findOrFail($id);
 
-        return response()->json($label);
+        return response()->json([
+            'message' => 'Etiqueta encontrada',
+            'data' => $label
+        ], 200);
     }
 
 
@@ -93,6 +103,11 @@ class LabelsController extends Controller
             return response()->json([
                 'message' => 'No se encontro el id',
                 'data' => $e
+            ], 404);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Etiqueta no encontrada',
+                'data' => $e->getMessage()
             ], 404);
         }
     }
