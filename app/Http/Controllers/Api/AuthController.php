@@ -31,6 +31,11 @@ class AuthController extends Controller
             $token = $user->createToken('auth_token')->plainTextToken;
             // obteniendo datos del usuario
             $user = Auth::user();
+            if ($user->status == 'inactivo') {
+                return response()->json([
+                    'message' => 'Usuario inactivo'
+                ], 401);
+            }
             return response()->json([
                 'message' => 'Login correcto',
                 'data' => $user,
