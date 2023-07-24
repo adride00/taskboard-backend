@@ -9,6 +9,7 @@ class SignupRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
+
     public function authorize(): bool
     {
         return true;
@@ -24,7 +25,7 @@ class SignupRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email:rfc,dns|unique:users',
-            'password' => 'required|string|min:8'
+            'password' => 'required|string|min:5'
         ];
     }
 }
