@@ -13,7 +13,25 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login', 'signup']]);
+    }
+
+    public function signup(SignupRequest $request)
+    {
+        try {
+            $user = User::create($request->validated());
+            $token = $user->createToken('auth_token')->plainTextToken;
+            return response()->json([
+                'message' => 'Usuario creado correctamente',
+                'data' => $user,
+                'access_token' => $token
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al crear usuario',
+                'data' => $e->getMessage()
+            ], 500);
+        }
     }
 
 
