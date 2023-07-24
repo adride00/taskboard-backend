@@ -17,7 +17,7 @@ class VerifyToken
     public function handle(Request $request, Closure $next)
     {
         $currentUrl = $request->getPathInfo();
-        if ($currentUrl === '/api/login') {
+        if ($currentUrl === '/api/login' || $currentUrl === '/api/signup') {
             return $next($request);
         }
         if (!$request->hasHeader('Authorization')) {
