@@ -199,4 +199,29 @@ class TasksController extends Controller
 
         return response()->json($registro);
     }
+
+    // get tasks by user
+    public function filterByUser(string $id)
+    {
+        try {
+            $registro = Tasks::join('projects', 'tasks.project_id', '=', 'projects.id')
+                ->join('users', 'tasks.user_id', '=', 'users.id')
+                ->join('labels', 'tasks.label_id', '=', 'labels.id')
+                ->select('tasks.*', 'projects.name as project_name', 'users.name as user_name', 'labels.name as label_name')
+                ->where('users.id', '=', $id)
+                ->get();
+
+            if ($registro->isEmpty()) {
+                return response()->json([
+                    'message' => 'No se encontraron tareas que coincidan con la búsqueda'
+                ], 404);
+            }
+
+            return response()->json($registro);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Ocurrio un error con la busqueda de tareas'
+            ], 404);
+        }
+    }
 }
