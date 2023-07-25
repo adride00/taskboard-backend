@@ -30,6 +30,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/updateProgress/{id}', [TasksController::class, 'updateProgress']);
     Route::post('/tasks', [TasksController::class, 'store']);
     Route::get('/searchTasks/{search}', [TasksController::class, 'searchTask']);
+    Route::get('/filterByUser/{id}', [TasksController::class, 'filterByUser']);
 
     Route::get('/labels', [LabelsController::class, 'index']);
     Route::post('/labels', [LabelsController::class, 'store']);
