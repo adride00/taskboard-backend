@@ -56,12 +56,19 @@ class LabelsController extends Controller
 
     public function show(string $id)
     {
-        $label = Labels::findOrFail($id);
+        try {
+            $label = Labels::findOrFail($id);
 
-        return response()->json([
-            'message' => 'Etiqueta encontrada',
-            'data' => $label
-        ], 200);
+            return response()->json([
+                'message' => 'Etiqueta encontrada',
+                'data' => $label
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'No se encontro el id',
+                'data' => $e
+            ], 404);
+        }
     }
 
 

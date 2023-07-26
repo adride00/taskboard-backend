@@ -34,7 +34,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/labels', [LabelsController::class, 'index']);
     Route::post('/labels', [LabelsController::class, 'store']);
-    Route::Put('label/{id}', [LabelsController::class, 'update']);
+    Route::get('/label/{id}', [LabelsController::class, 'show']);
+    Route::put('label/{id}', [LabelsController::class, 'update']);
     Route::put('deleteLabel/{id}', [LabelsController::class, 'softDelete']);
 
     Route::get('/projects', [ProjectsController::class, 'index']);
