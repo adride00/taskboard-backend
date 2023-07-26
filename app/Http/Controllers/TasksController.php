@@ -132,7 +132,7 @@ class TasksController extends Controller
         ];
 
         $validatedData = $request->validate([
-            'progress' => 'required|string|max:255',
+            'status' => 'string|max:255',
         ], $customMessages);
 
         $progress = Tasks::findOrFail($id);
