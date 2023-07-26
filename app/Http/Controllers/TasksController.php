@@ -135,13 +135,13 @@ class TasksController extends Controller
             'status' => 'string|max:255',
         ], $customMessages);
 
-        $progress = Tasks::findOrFail($id);
-        $progress->progress = $validatedData['progress'];
-        $progress->save();
+        $status = Tasks::findOrFail($id);
+        $status->status = $validatedData['status'];
+        $status->save();
 
         return response()->json([
             'message' => 'Tarea actualizada',
-            'data' => $progress
+            'data' => $status
         ]);
     }
 
